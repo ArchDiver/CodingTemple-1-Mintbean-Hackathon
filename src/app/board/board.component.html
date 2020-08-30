@@ -1,48 +1,121 @@
-<body>
-  
+<input type="text" class="task-input" placeholder="Add a New Task here" [(ngModel)]="taskTitle">
+
 <div class="example-container">
-    <h2>To do <span><button mat-icon-button>
-      <mat-icon>more_vert</mat-icon>
-     </button></span></h2>
-  
-    <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="todo"
-      [cdkDropListConnectedTo]="[doneList, inprogressList]"
-      class="example-list"
-      (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of todo" cdkDrag>{{item}}</div>
+  <h2>To do <span><button mat-icon-button>
+    <mat-icon>more_vert</mat-icon>
+   </button></span></h2>
+
+  <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="tasks"
+    [cdkDropListConnectedTo]=""
+    class="example-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="task-item" *ngFor="let task in tasks" (keyup.enter)="addTask()">
+      <div class="task-item-left">
+        <span>
+          <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+        </span>
+        <div *ngIf="!task.edit; else editTask" class="task-item-label" (dblclick)=editTask(task)> {{task.title}}</div>
+        <ng-template #editTask>
+          <input type="text" class="task-item-edit" [(ngModel)]="task.title" 
+            (blur)="doneEdit(task)" (keyup.enter)="doneEdit(task)" (keyup.esc)="cancleEdit(task)" autofocus>
+        </ng-template>
+      </div>
+      <div class="remove-task">
+        <input type="button" class="col-2 btn btn-danger" (click)="deleteTask(task.id)" value="Delete"  > 
+      </div>
+    </div>
+
+
+<!-- //////////////////////////////// -->
+
+<!-- <div class="example-container">
+  <h2>To do <span><button mat-icon-button>
+    <mat-icon>more_vert</mat-icon>
+   </button></span></h2>
+
+  <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="tasks"
+    [cdkDropListConnectedTo]=""
+    class="example-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let task of tasks, let index = taskID;" cdkDrag>
+      <div class="col-9 text-light h3">{{item}}</div>
+      <input (click)="deleteTask(taskID)" type="button" value="Delete" class="col-2 btn btn-danger">
     </div>
   </div>
-  
-  <div class="example-container">
-    <h2>In Progress <span><button mat-icon-button>
-      <mat-icon>more_vert</mat-icon>
-     </button></span></h2>
-   
-    <div
-      cdkDropList
-      #inprogressList="cdkDropList"
-      [cdkDropListData]="inprogress"
-      [cdkDropListConnectedTo]="[todoList, doneList]"
-      class="example-list"
-      (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of inprogress" cdkDrag>{{item}}</div>
+</div>  
+<div class="example-container">
+  <h2>To do <span><button mat-icon-button>
+    <mat-icon>more_vert</mat-icon>
+   </button></span></h2>
+
+  <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="items"
+    [cdkDropListConnectedTo]="[doneList, inprogressList]"
+    class="example-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let item of items, let index = index;" cdkDrag>
+      <div class="col-9 text-light h3">{{item}}</div>
+      <input (click)="deleteTask(index)" type="button" value="Delete" class="col-2 btn btn-danger">
     </div>
+  </div>
+</div>  -->
+
+
+<!-- ////////////////////////////// -->
+<!-- <div class="extra-container">
+  <div><label><input type="checkbox" (change)="checkAllTasks()"  [(ngModel)]="!anyRemainingModel"> Check All</label></div>
+  <div>{{ remaining() }} items left</div>
+</div>
+
+<div class="extra-container">
+  <div>
+    <button [ngClass]="{'active': filter === 'all'}" (click)="filter='all'">All</button>
+    <button [ngClass]="{'active': filter === 'active'}" (click)="filter='active'">Active</button>
+    <button [ngClass]="{'active': filter === 'completed'}" (click)="filter='completed'">Completed</button>
   </div>
 
-  <div class="example-container">
-    <h2>Done <span><button mat-icon-button>
-      <mat-icon>more_vert</mat-icon>
-     </button></span></h2>
-  
-    <div
-      cdkDropList
-      #doneList="cdkDropList"
-      [cdkDropListData]="done"
-      [cdkDropListConnectedTo]="[todoList, inprogressList]"
-      class="example-list"
-      (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of done" cdkDrag>{{item}}</div>
-    </div>
+  <div *ngIf="atLeastOneCompleted()">
+    <button (click)="clearCompleted()">Clear Completed</button>
   </div>
-  <button (click)="getNewElement()">Make a new thing</button>
-</body>
+
+</div> -->
+
+<!-- ////////////////////////////////////////////////////////// -->
+
+
+
+
+
+<!-- <div class="container-fluid"> 
+  <div class="row bg-success justify-content-center 
+          align-items-center" style="height:80px"> 
+      <div class="col-3"></div> 
+      <div class="col-6 text-light h2"> 
+          JNL Kanban 
+      </div> 
+  </div> 
+
+  <!--Division for taking input from user -->
+  <!-- <div class="row mt-1" style="height:80px;"> 
+    <div class="col-3 d-none col-md-3 d-md-block"></div> 
+    <div class="col-12 col-md-6 bg-success d-flex justify-content-center align-items-center text-light h3">
+      <div>
+        <input [(ngModel)]="newList" type="text" value="" class="col-7 form-control" style="width:300px;"> 
+        <div class="col-1"></div> 
+        <button (click)="addNewList()" class="btn btn-light text-success">ADD LIST</button>
+      </div> 
+      
+      <div>
+        <input [(ngModel)]="newTask" type="text" value="" class="col-7 form-control" style="width:300px;"> 
+        <div class="col-1"></div> 
+        <button (click)="addToList()" class="btn btn-light text-success">ADD TASK</button>
+      </div>        
+    </div>  
+  <div class="col-3 d-none col-md-3 d-md-block"></div> 
+</div>   
+</div>  -->
+
+
+<!-- //////////////////////////////////////////////////// -->
+
+
+
